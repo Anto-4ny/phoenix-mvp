@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import {
   Box,
   Typography,
-  Grid,
   Paper,
   TextField,
   MenuItem,
   Button,
-  Alert
+  Alert,
 } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import { supabase } from '../supabaseClient';
 
 const ProfilePage: React.FC = () => {
@@ -27,7 +27,7 @@ const ProfilePage: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
   const handleChange = (field: string, value: string) => {
-    setProfile({ ...profile, [field]: value });
+    setProfile((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleSave = async () => {
@@ -72,11 +72,20 @@ const ProfilePage: React.FC = () => {
       </Typography>
 
       <Paper sx={{ p: 3, borderRadius: 2, maxWidth: 900 }}>
-        {success && <Alert severity="success" sx={{ mb: 2 }}>Profile saved successfully</Alert>}
-        {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+        {success && (
+          <Alert severity="success" sx={{ mb: 2 }}>
+            Profile saved successfully
+          </Alert>
+        )}
+
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {error}
+          </Alert>
+        )}
 
         <Grid container spacing={3}>
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               label="Full Name"
               fullWidth
@@ -85,7 +94,7 @@ const ProfilePage: React.FC = () => {
             />
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               label="Age"
               type="number"
@@ -95,7 +104,7 @@ const ProfilePage: React.FC = () => {
             />
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               label="Height (cm)"
               type="number"
@@ -105,7 +114,7 @@ const ProfilePage: React.FC = () => {
             />
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               label="Weight (kg)"
               type="number"
@@ -115,7 +124,7 @@ const ProfilePage: React.FC = () => {
             />
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               select
               label="Fitness Goal"
@@ -129,13 +138,15 @@ const ProfilePage: React.FC = () => {
             </TextField>
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               select
               label="Activity Level"
               fullWidth
               value={profile.activityLevel}
-              onChange={(e) => handleChange('activityLevel', e.target.value)}
+              onChange={(e) =>
+                handleChange('activityLevel', e.target.value)
+              }
             >
               <MenuItem value="low">Low</MenuItem>
               <MenuItem value="moderate">Moderate</MenuItem>
@@ -143,7 +154,7 @@ const ProfilePage: React.FC = () => {
             </TextField>
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               select
               label="Dietary Preference"
@@ -157,10 +168,9 @@ const ProfilePage: React.FC = () => {
             </TextField>
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <Button
               variant="contained"
-              color="primary"
               onClick={handleSave}
               disabled={loading}
               sx={{ px: 4, py: 1.5 }}

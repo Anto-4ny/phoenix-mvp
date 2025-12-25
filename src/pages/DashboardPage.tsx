@@ -1,6 +1,7 @@
 // src/pages/DashboardPage.tsx
 import React from 'react';
-import { Box, Typography, Grid, Paper } from '@mui/material';
+import { Box, Typography, Paper } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import {
   LineChart,
   Line,
@@ -40,50 +41,63 @@ const DashboardPage: React.FC = () => {
 
       <Grid container spacing={3}>
         {/* Workout Overview */}
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Paper sx={{ p: 3, borderRadius: 2 }}>
             <Typography variant="h6" fontWeight="bold" gutterBottom>
               Workout Overview
             </Typography>
+
             <ResponsiveContainer width="100%" height={250}>
               <LineChart data={workoutData}>
                 <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
                 <XAxis dataKey="day" />
                 <YAxis />
                 <Tooltip />
-                <Line type="monotone" dataKey="calories" stroke="#1E3A8A" strokeWidth={3} />
+                <Line
+                  type="monotone"
+                  dataKey="calories"
+                  stroke="#1E3A8A"
+                  strokeWidth={3}
+                />
               </LineChart>
             </ResponsiveContainer>
           </Paper>
         </Grid>
 
         {/* Nutrition Overview */}
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Paper sx={{ p: 3, borderRadius: 2 }}>
             <Typography variant="h6" fontWeight="bold" gutterBottom>
               Nutrition Overview
             </Typography>
+
             <ResponsiveContainer width="100%" height={250}>
               <LineChart data={nutritionData}>
                 <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
                 <XAxis dataKey="day" />
                 <YAxis />
                 <Tooltip />
-                <Line type="monotone" dataKey="protein" stroke="#000000" strokeWidth={3} />
+                <Line
+                  type="monotone"
+                  dataKey="protein"
+                  stroke="#000000"
+                  strokeWidth={3}
+                />
               </LineChart>
             </ResponsiveContainer>
           </Paper>
         </Grid>
 
         {/* Progress Summary */}
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <Paper sx={{ p: 3, borderRadius: 2 }}>
             <Typography variant="h6" fontWeight="bold" gutterBottom>
               Weekly Progress
             </Typography>
+
             <Typography variant="body1">
-              You have completed 4/5 planned workouts this week and met 80% of your protein
-              intake goals.
+              You have completed 4/5 planned workouts this week and met 80% of
+              your protein intake goals.
             </Typography>
           </Paper>
         </Grid>
