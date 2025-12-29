@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+// src/layouts/DashboardLayout.tsx
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Drawer,
@@ -6,16 +7,43 @@ import {
   Typography,
   Button,
   Stack,
+  Avatar,
 } from '@mui/material';
 import MenuOpenIcon from '@mui/icons-material/MenuOpen';
 import SportsGymnasticsIcon from '@mui/icons-material/SportsGymnastics';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '../supabaseClient';
 
 const drawerWidth = 260;
 
 const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [user, setUser] = useState<any>(null);
   const navigate = useNavigate();
+
+  // Listen to auth changes
+useEffect(() => {
+  const getUser = async () => {
+    const { data } = await supabase.auth.getUser();
+    setUser(data.user);
+  };
+
+  getUser();
+
+  const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    setUser(session?.user ?? null);
+  });
+
+  return () => {
+    subscription.unsubscribe();
+  };
+}, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+    navigate('/');
+  };
 
   const drawer = (
     <Box sx={{ p: 3 }}>
@@ -108,7 +136,7 @@ const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ children }) 
 
       {/* Main Content */}
       <Box sx={{ flexGrow: 1, p: { xs: 2, md: 4 } }}>
-        {/* Topbar (Auth CTA – logic later) */}
+        {/* Topbar */}
         <Box
           sx={{
             mb: 4,
@@ -124,28 +152,45 @@ const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ children }) 
             </Typography>
           </Stack>
 
-          <Stack direction="row" spacing={1}>
-            <Button
-              variant="outlined"
-              sx={{
-                borderColor: '#38bdf8',
-                color: '#38bdf8',
-              }}
-              onClick={() => navigate('/')}
-            >
-              Login
-            </Button>
-            <Button
-              variant="contained"
-              sx={{
-                background:
-                  'linear-gradient(90deg, #22c55e, #16a34a)',
-                fontWeight: 700,
-              }}
-              onClick={() => navigate('/signup')}
-            >
-              Sign Up
-            </Button>
+          {/* Auth Buttons / Profile */}
+          <Stack direction="row" spacing={1} alignItems="center">
+            {!user ? (
+              <>
+                <Button
+                  variant="outlined"
+                  sx={{ borderColor: '#38bdf8', color: '#38bdf8' }}
+                  onClick={() => navigate('/')}
+                >
+                  Login
+                </Button>
+                <Button
+                  variant="contained"
+                  sx={{
+                    background: 'linear-gradient(90deg, #22c55e, #16a34a)',
+                    fontWeight: 700,
+                  }}
+                  onClick={() => navigate('/signup')}
+                >
+                  Sign Up
+                </Button>
+              </>
+            ) : (
+              <>
+                <Avatar
+                  sx={{ bgcolor: '#38bdf8', width: 36, height: 36, cursor: 'pointer' }}
+                  onClick={() => navigate('/profile')}
+                >
+                  {user.email?.[0].toUpperCase()}
+                </Avatar>
+                <Button
+                  variant="outlined"
+                  sx={{ borderColor: '#ef4444', color: '#ef4444', ml: 1 }}
+                  onClick={handleLogout}
+                >
+                  Logout
+                </Button>
+              </>
+            )}
           </Stack>
         </Box>
 
