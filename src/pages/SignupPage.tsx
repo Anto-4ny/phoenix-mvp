@@ -10,18 +10,27 @@ import {
   InputAdornment,
   IconButton,
   Link,
+  Paper,
 } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEnvelope, faLock, faUser, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import {
+  faEnvelope,
+  faLock,
+  faUser,
+  faEye,
+  faEyeSlash,
+} from '@fortawesome/free-solid-svg-icons';
 import { supabase } from '../supabaseClient';
 import { useNavigate } from 'react-router-dom';
 
 const SignupPage: React.FC = () => {
   const navigate = useNavigate();
+
+  const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [fullName, setFullName] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -31,17 +40,18 @@ const SignupPage: React.FC = () => {
     setError(null);
     setSuccessMsg(null);
 
-    // Basic validation
     if (!fullName || !email || !password) {
       setError('Please fill in all fields.');
       setLoading(false);
       return;
     }
 
-    const { data, error } = await supabase.auth.signUp({
+    const { error } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { full_name: fullName } },
+      options: {
+        data: { full_name: fullName },
+      },
     });
 
     setLoading(false);
@@ -49,119 +59,156 @@ const SignupPage: React.FC = () => {
     if (error) {
       setError(error.message);
     } else {
-      setSuccessMsg('Signup successful! Please check your email to confirm.');
+      setSuccessMsg('Account created! Check your email to confirm.');
       setTimeout(() => navigate('/dashboard'), 1500);
     }
   };
 
-  const handlePasswordToggle = () => {
-    setShowPassword((prev) => !prev);
-  };
-
   return (
-    <Container
-      maxWidth="xs"
+    <Box
       sx={{
-        mt: 8,
-        mb: 8,
-        bgcolor: 'white',
-        p: 4,
-        borderRadius: 3,
-        boxShadow: 3,
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        px: 2,
+        background:
+          'radial-gradient(circle at top, #0f172a 0%, #020617 60%)',
       }}
     >
-      <Box sx={{ textAlign: 'center', mb: 4 }}>
-        <Typography variant="h4" fontWeight="bold" color="primary">
-          Body-building App
-        </Typography>
-        <Typography variant="subtitle1" color="text.secondary">
-          Create your account
-        </Typography>
-      </Box>
-
-      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-      {successMsg && <Alert severity="success" sx={{ mb: 2 }}>{successMsg}</Alert>}
-
-      <Box display="flex" flexDirection="column" gap={2}>
-        {/* Full Name */}
-        <TextField
-          label="Full Name"
-          value={fullName}
-          onChange={(e) => setFullName(e.target.value)}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <FontAwesomeIcon icon={faUser} color="#1976d2" />
-              </InputAdornment>
-            ),
+      <Container maxWidth="xs">
+        <Paper
+          elevation={0}
+          sx={{
+            p: 4,
+            borderRadius: 4,
+            backgroundColor: 'background.paper',
+            border: '1px solid #1f2937',
           }}
-          fullWidth
-        />
-
-        {/* Email */}
-        <TextField
-          label="Email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <FontAwesomeIcon icon={faEnvelope} color="#1976d2" />
-              </InputAdornment>
-            ),
-          }}
-          fullWidth
-        />
-
-        {/* Password with toggle */}
-        <TextField
-          label="Password"
-          type={showPassword ? 'text' : 'password'}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <FontAwesomeIcon icon={faLock} color="#1976d2" />
-              </InputAdornment>
-            ),
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton onClick={handlePasswordToggle} edge="end">
-                  <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-          fullWidth
-        />
-
-        {/* Signup Button */}
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleSignup}
-          disabled={loading}
-          fullWidth
-          sx={{ py: 1.5, mt: 1 }}
         >
-          {loading ? 'Signing up...' : 'Sign Up'}
-        </Button>
+          {/* Header */}
+          <Box textAlign="center" mb={4}>
+            <Typography variant="h4" gutterBottom>
+              Body-Building App
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Start your transformation
+            </Typography>
+          </Box>
 
-        {/* Login Redirect */}
-        <Box textAlign="center">
-          <Link
-            component="button"
-            variant="body2"
-            onClick={() => navigate('/')}
-            sx={{ fontWeight: 500 }}
-          >
-            Already have an account? Login
-          </Link>
-        </Box>
-      </Box>
-    </Container>
+          {error && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {error}
+            </Alert>
+          )}
+
+          {successMsg && (
+            <Alert severity="success" sx={{ mb: 2 }}>
+              {successMsg}
+            </Alert>
+          )}
+
+          {/* Form */}
+          <Box display="flex" flexDirection="column" gap={2}>
+            <TextField
+              label="Full Name"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <FontAwesomeIcon
+                      icon={faUser}
+                      color="#38bdf8" /* electric blue */
+                    />
+                  </InputAdornment>
+                ),
+              }}
+            />
+
+            <TextField
+              label="Email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <FontAwesomeIcon
+                      icon={faEnvelope}
+                      color="#38bdf8"
+                    />
+                  </InputAdornment>
+                ),
+              }}
+            />
+
+            <TextField
+              label="Password"
+              type={showPassword ? 'text' : 'password'}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <FontAwesomeIcon
+                      icon={faLock}
+                      color="#22c55e" /* neon green */
+                    />
+                  </InputAdornment>
+                ),
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => setShowPassword((p) => !p)}
+                      edge="end"
+                      sx={{ color: 'text.secondary' }}
+                    >
+                      <FontAwesomeIcon
+                        icon={showPassword ? faEyeSlash : faEye}
+                      />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+
+            <Button
+              variant="contained"
+              color="secondary"
+              size="large"
+              onClick={handleSignup}
+              disabled={loading}
+              sx={{
+                mt: 1,
+                fontWeight: 700,
+              }}
+            >
+              {loading ? 'Creating account...' : 'Create Account'}
+            </Button>
+
+            <Box textAlign="center" mt={1}>
+              <Typography variant="body2" color="text.secondary">
+                Already have an account?{' '}
+                <Link
+                  component="button"
+                  onClick={() => navigate('/')}
+                  sx={{
+                    color: 'secondary.main',
+                    fontWeight: 600,
+                  }}
+                >
+                  Login
+                </Link>
+              </Typography>
+            </Box>
+          </Box>
+        </Paper>
+      </Container>
+    </Box>
   );
 };
 

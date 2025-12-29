@@ -1,13 +1,62 @@
-body {
+/* src/index.css */
+
+/* CSS Reset */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Root Variables (Design Tokens) */
+:root {
+  --color-primary: #0f172a;   /* Dark blue / black */
+  --color-secondary: #22c55e; /* Neon green */
+  --color-accent: #38bdf8;    /* Electric blue */
+  --color-error: #ef4444;     /* Red */
+
+  --bg-main: #0b0b0b;
+  --bg-paper: #111827;
+
+  --text-primary: #ffffff;
+  --text-secondary: #9ca3af;
+}
+
+html,
+body,
+#root {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  padding: 0;
+  height: 100%;
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI',
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+/* Links */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Buttons reset */
+button {
+  font-family: inherit;
+}
+
+/* Scrollbar (premium dark) */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #0b0b0b;
+}
+::-webkit-scrollbar-thumb {
+  background: #1f2937;
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #374151;
 }
