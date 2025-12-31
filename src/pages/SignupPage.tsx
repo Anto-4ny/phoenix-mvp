@@ -195,7 +195,7 @@ const SignupPage: React.FC = () => {
                 Already have an account?{' '}
                 <Link
                   component="button"
-                  onClick={() => navigate('/')}
+                  onClick={() => navigate('/login')}
                   sx={{
                     color: 'secondary.main',
                     fontWeight: 600,

@@ -38,13 +38,16 @@ const steps = [
       'At home',
       'Without equipment',
     ],
-    conditionalNext: (answer: string) =>
-      answer.includes('gym') ? 'equipment' : null,
   },
   {
-    key: 'equipment',
-    title: 'What equipment do you have access to?',
-    options: ['Full machines', 'Free weights', 'Bands only', 'None'],
+    key: 'equipment_access',
+    title: 'What best describes your equipment access?',
+    options: [
+      'Full gym machines',
+      'Free weights available',
+      'Bands / minimal equipment',
+      'Bodyweight only',
+    ],
   },
 ];
 
@@ -66,18 +69,25 @@ export default function OnboardingPage() {
     const updated = { ...answers, [step.key]: value };
     setAnswers(updated);
 
-    if (userId) await saveOnboarding(userId, updated);
+    if (userId) await saveOnboarding(userId, stepIndex, updated);
   };
+const isLastStep = stepIndex === steps.length - 1;
 
-  const next = () => {
-    const conditional = step.conditionalNext?.(answers[step.key]);
-    if (conditional) {
-      const idx = steps.findIndex((s) => s.key === conditional);
-      setStepIndex(idx);
-    } else {
-      setStepIndex((s) => s + 1);
-    }
-  };
+const next = async () => {
+  if (!userId) return;
+
+  // Save current step
+  await saveOnboarding(userId, stepIndex + 1, answers);
+
+  if (isLastStep) {
+    // 🚀 Go to full equipment review page
+    window.location.href = '/onboarding/equipment-review';
+    return;
+  }
+
+  setStepIndex((s) => s + 1);
+};
+
 
   const prev = () => setStepIndex((s) => Math.max(0, s - 1));
 

@@ -72,7 +72,7 @@ useEffect(() => {
   };
 
   const ctaRedirect = () => {
-    if (user) navigate('/dashboard');
+    if (user) navigate('/onboarding');
     else navigate('/signup');
   };
 
@@ -143,7 +143,7 @@ useEffect(() => {
                   <Button
                     variant="outlined"
                     sx={{ color: '#00e676', borderColor: '#00e676' }}
-                    onClick={() => navigate('/')}
+                    onClick={() => navigate('/login')}
                   >
                     Login
                   </Button>
@@ -157,7 +157,7 @@ useEffect(() => {
                 </>
               ) : (
                 <>
-                  <IconButton onClick={() => navigate('/dashboard')}>
+                  <IconButton onClick={() => navigate('/profile')}>
                     <AccountCircleIcon sx={{ color: '#38bdf8' }} fontSize="large" />
                   </IconButton>
                   <Button

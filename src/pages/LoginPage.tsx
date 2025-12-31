@@ -53,7 +53,7 @@ const LoginPage: React.FC = () => {
       setError(error.message);
     } else {
       setSuccessMsg('Login successful! Redirecting...');
-      setTimeout(() => navigate('/dashboard'), 1000);
+      setTimeout(() => navigate('/onboarding'), 1000);
     }
   };
 
