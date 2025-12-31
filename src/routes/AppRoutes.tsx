@@ -5,6 +5,7 @@ import SignupPage from '../pages/SignupPage';
 import DashboardPage from '../pages/DashboardPage';
 import ProfilePage from '../pages/ProfilePage';
 import LandingPage from '../pages/LandingPage';
+import OnboardingPage from '../pages/OnboardingPage';
 
 export default function AppRoutes() {
   return (
@@ -15,6 +16,7 @@ export default function AppRoutes() {
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/home" element={<LandingPage />} />
         <Route path="/signup" element={<SignupPage />} />
+        <Route path="/onboarding" element={<OnboardingPage />} />
       </Routes>
     </Router>
   );
