@@ -7,6 +7,7 @@ import ProfilePage from '../pages/ProfilePage';
 import LandingPage from '../pages/LandingPage';
 import OnboardingPage from '../pages/OnboardingPage';
 import EquipmentReviewPage from '../pages/onboarding/EquipmentReviewPage';
+import TrainingSchedulePage from '../pages/onboarding/TrainingSchedulePage';
 
 export default function AppRoutes() {
   return (
@@ -18,10 +19,8 @@ export default function AppRoutes() {
       <Route path="/signup" element={<SignupPage />} />
 
       <Route path="/onboarding/*" element={<OnboardingPage />} />
-      <Route
-        path="/onboarding/equipment-review"
-        element={<EquipmentReviewPage />}
-      />
+      <Route path="/onboarding/equipment-review" element={<EquipmentReviewPage />} />
+      <Route path="/onboarding/training-schedule" element={<TrainingSchedulePage />} />
     </Routes>
   );
 }
