@@ -48,7 +48,7 @@ export default function TrainingSchedulePage() {
       },
     }).eq('id', userId);
 
-    window.location.href = '/onboarding/recovery';
+    window.location.href = '/onboarding/recovery-sleep';
   };
 
   return (
