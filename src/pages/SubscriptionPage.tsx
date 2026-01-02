@@ -5,17 +5,39 @@ import {
   Stack,
   Button,
   Card,
-  CardContent,
   Divider,
   Switch,
   Fade,
 } from '@mui/material';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import { keyframes } from '@mui/system';
 
 export default function SubscriptionPage() {
   const [billing, setBilling] = useState<'yearly' | 'monthly'>('yearly');
   const [reminder, setReminder] = useState(true);
 
   const price = billing === 'yearly' ? 'Ksh 14,000.00/year' : 'Ksh 1,166.67/month';
+
+  const neonGlow = keyframes`
+    0% { text-shadow: 0 0 5px #38BDF8, 0 0 10px #38BDF8, 0 0 20px #38BDF8; }
+    50% { text-shadow: 0 0 10px #38BDF8, 0 0 20px #38BDF8, 0 0 30px #38BDF8; }
+    100% { text-shadow: 0 0 5px #38BDF8, 0 0 10px #38BDF8, 0 0 20px #38BDF8; }
+  `;
+
+  const features = [
+    {
+      title: 'Today',
+      desc: 'Unlock your personalised workout program, exercise library, progress tracking and more.',
+    },
+    {
+      title: 'In 3 Days',
+      desc: "We'll send you a reminder that your trial is ending soon.",
+    },
+    {
+      title: 'In 7 Days',
+      desc: 'Your subscription starts. Cancel anytime before your trial ends to avoid billing.',
+    },
+  ];
 
   return (
     <Box
@@ -40,7 +62,9 @@ export default function SubscriptionPage() {
             fontWeight={800}
             color="#22C55E"
             textAlign="center"
-            sx={{ textShadow: '0px 4px 20px rgba(34,197,94,0.5)' }}
+            sx={{
+              textShadow: '0px 4px 20px rgba(34,197,94,0.5)',
+            }}
           >
             Try 7 Days for Free
           </Typography>
@@ -97,37 +121,43 @@ export default function SubscriptionPage() {
         </Button>
       </Stack>
 
-      {/* Feature Timeline */}
-      <Card
-        sx={{
-          bgcolor: '#1E293B',
-          borderRadius: 4,
-          width: '100%',
-          maxWidth: 650,
-          mb: 6,
-          p: 4,
-          boxShadow: '0 10px 40px rgba(0,0,0,0.5)',
-          border: '1px solid rgba(56,189,248,0.2)',
-          transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-          '&:hover': { transform: 'translateY(-5px)', boxShadow: '0 20px 60px rgba(0,0,0,0.6)' },
-        }}
+      {/* Feature Timeline with Neon Glow & Checkmarks */}
+      <Stack
+        spacing={4}
+        width="100%"
+        maxWidth={650}
+        mb={6}
       >
-        <Stack spacing={4}>
-          {[
-            {
-              title: 'Today',
-              desc: 'Unlock your personalised workout program, exercise library, progress tracking and more.',
-            },
-            {
-              title: 'In 3 Days',
-              desc: "We'll send you a reminder that your trial is ending soon.",
-            },
-            {
-              title: 'In 7 Days',
-              desc: 'Your subscription starts. Cancel anytime before your trial ends to avoid billing.',
-            },
-          ].map((item) => (
-            <Stack key={item.title} spacing={1}>
+        {features.map((item, index) => (
+          <Card
+            key={item.title}
+            sx={{
+              bgcolor: '#1E293B',
+              borderRadius: 4,
+              p: 3,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 2,
+              boxShadow: '0 8px 25px rgba(0,0,0,0.4)',
+              border: '1px solid rgba(56,189,248,0.2)',
+              position: 'relative',
+              overflow: 'visible',
+              transform: 'translateY(0)',
+              transition: 'all 0.4s ease',
+              '&:hover': {
+                transform: 'translateY(-5px)',
+                boxShadow: '0 15px 50px rgba(0,0,0,0.6)',
+              },
+            }}
+          >
+            <CheckCircleIcon
+              sx={{
+                color: '#38BDF8',
+                fontSize: 32,
+                animation: `${neonGlow} 2s infinite`,
+              }}
+            />
+            <Stack>
               <Typography
                 variant="subtitle1"
                 fontWeight={700}
@@ -138,9 +168,9 @@ export default function SubscriptionPage() {
               </Typography>
               <Typography sx={{ opacity: 0.85 }}>{item.desc}</Typography>
             </Stack>
-          ))}
-        </Stack>
-      </Card>
+          </Card>
+        ))}
+      </Stack>
 
       {/* Reminder Toggle */}
       <Stack
@@ -169,21 +199,22 @@ export default function SubscriptionPage() {
       <Button
         variant="contained"
         sx={{
-          bgcolor: '#22C55E',
+          bgcolor: 'linear-gradient(90deg, #22C55E, #38BDF8)',
+          background: 'linear-gradient(90deg, #22C55E, #38BDF8)',
           color: '#020617',
           px: 8,
-          py: 2.2,
+          py: 2.4,
           fontWeight: 800,
           fontSize: '1.2rem',
           borderRadius: 3,
-          boxShadow: '0 8px 20px rgba(34,197,94,0.5)',
+          boxShadow: '0 8px 30px rgba(34,197,94,0.6)',
           transition: 'all 0.3s ease',
-          '&:hover': { bgcolor: '#16a34a', boxShadow: '0 12px 28px rgba(34,197,94,0.6)' },
+          '&:hover': {
+            boxShadow: '0 15px 50px rgba(34,197,94,0.8)',
+            transform: 'scale(1.05)',
+          },
         }}
-        onClick={() => {
-          // TODO: Integrate subscription API
-          window.location.href = '/dashboard';
-        }}
+        onClick={() => window.location.href = '/dashboard'}
       >
         Start Your Free Trial
       </Button>
