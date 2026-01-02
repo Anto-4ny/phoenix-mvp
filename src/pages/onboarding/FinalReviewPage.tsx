@@ -53,7 +53,7 @@ export default function FinalReviewPage() {
     if (!userId) return;
     await saveOnboarding(userId, 999, { completed: true, answers });
     // Redirect to dashboard or homepage
-    window.location.href = '/dashboard';
+    window.location.href = '/subscription';
   };
 
   const renderAnswer = (key: string, value: any) => {

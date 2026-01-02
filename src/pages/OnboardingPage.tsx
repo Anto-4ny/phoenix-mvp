@@ -92,66 +92,82 @@ const next = async () => {
   const prev = () => setStepIndex((s) => Math.max(0, s - 1));
 
   return (
-    <Box
-      minHeight="100vh"
-      bgcolor="#0F172A"
-      px={3}
-      py={4}
-      sx={{
-        background:
-          'radial-gradient(circle at top, #020617, #0F172A)',
+<Box
+  minHeight="100vh"
+  bgcolor="#0F172A"
+  px={3}
+  py={4}
+  sx={{
+    background: 'radial-gradient(circle at top, #020617, #0F172A)',
+  }}
+>
+  {/* Skip Button */}
+  <Box display="flex" justifyContent="flex-end" mb={2}>
+    <Button
+      sx={{ color: '#38BDF8' }}
+      onClick={() => {
+        // Skip current onboarding and go to equipment review page
+        window.location.href = '/onboarding/equipment-review';
       }}
     >
-      <Button sx={{ color: '#38BDF8', float: 'right' }}>Skip</Button>
+      Skip
+    </Button>
+  </Box>
 
-      <ProgressBar progress={progress} />
+  <ProgressBar progress={progress} />
 
-      <SwipeWrapper onNext={next} onPrev={prev}>
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={step.key}
-            initial={{ x: 100, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            exit={{ x: -100, opacity: 0 }}
-            transition={{ duration: 0.4 }}
-          >
-            <Typography
-              variant="h4"
-              mt={6}
-              mb={4}
-              fontWeight={700}
-              color="#E5E7EB"
-            >
-              {step.title}
-            </Typography>
-
-            <Stack spacing={2}>
-              {step.options.map((o) => (
-                <StepCard
-                  key={o}
-                  label={o}
-                  selected={answers[step.key] === o}
-                  onClick={() => select(o)}
-                />
-              ))}
-            </Stack>
-          </motion.div>
-        </AnimatePresence>
-      </SwipeWrapper>
-
-      <Box mt={6} display="flex" justifyContent="space-between">
-        <Button onClick={prev} disabled={stepIndex === 0}>
-          Back
-        </Button>
-        <Button
-          variant="contained"
-          disabled={!answers[step.key]}
-          onClick={next}
-          sx={{ bgcolor: '#22C55E', color: '#020617' }}
+  <SwipeWrapper onNext={next} onPrev={prev}>
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={step.key}
+        initial={{ x: 100, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        exit={{ x: -100, opacity: 0 }}
+        transition={{ duration: 0.4 }}
+      >
+        <Typography
+          variant="h4"
+          mt={6}
+          mb={4}
+          fontWeight={700}
+          color="#E5E7EB"
         >
-          Next
-        </Button>
-      </Box>
-    </Box>
+          {step.title}
+        </Typography>
+
+        <Stack spacing={2}>
+          {step.options.map((o) => (
+            <StepCard
+              key={o}
+              label={o}
+              selected={answers[step.key] === o}
+              onClick={() => select(o)}
+            />
+          ))}
+        </Stack>
+      </motion.div>
+    </AnimatePresence>
+  </SwipeWrapper>
+
+  {/* Navigation Buttons */}
+  <Box mt={6} display="flex" justifyContent="space-between">
+    <Button
+      onClick={prev}
+      disabled={stepIndex === 0}
+      sx={{ color: '#38BDF8' }}
+    >
+      Back
+    </Button>
+
+    <Button
+      variant="contained"
+      disabled={!answers[step.key]}
+      onClick={next}
+      sx={{ bgcolor: '#22C55E', color: '#020617' }}
+    >
+      {isLastStep ? 'Finish' : 'Next'}
+    </Button>
+  </Box>
+</Box>
   );
 }
