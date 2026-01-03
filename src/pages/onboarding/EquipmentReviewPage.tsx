@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import {
   Box,
   Typography,
@@ -5,10 +6,10 @@ import {
   Chip,
   Button,
   InputAdornment,
+  CircularProgress,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import SearchIcon from '@mui/icons-material/Search';
-import { useEffect, useState } from 'react';
 import { EQUIPMENT } from '../../data/equipment';
 import { supabase } from '../../supabaseClient';
 import { saveOnboarding } from '../../lib/saveOnboarding';
@@ -18,14 +19,24 @@ export default function EquipmentReviewPage() {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const [selected, setSelected] = useState<Record<string, boolean>>({});
   const [userId, setUserId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
   /* =========================
      LOAD USER + SAVED DATA
      ========================= */
   useEffect(() => {
-    supabase.auth.getUser().then(async ({ data }) => {
-      const id = data.user?.id;
-      if (!id) return;
+    let mounted = true;
+
+    const load = async () => {
+      const { data: auth } = await supabase.auth.getUser();
+      const id = auth.user?.id;
+
+      if (!id || !mounted) {
+        setLoading(false);
+        return;
+      }
+
       setUserId(id);
 
       const { data: profile } = await supabase
@@ -34,10 +45,18 @@ export default function EquipmentReviewPage() {
         .eq('id', id)
         .single();
 
-      setSelected(profile?.onboarding_data?.selected_equipment || {});
-    });
-  }, []);
+      if (mounted) {
+        setSelected(profile?.onboarding_data?.selected_equipment || {});
+        setLoading(false);
+      }
+    };
 
+    load();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   /* =========================
      HELPERS
@@ -52,27 +71,60 @@ export default function EquipmentReviewPage() {
      SAVE & CONTINUE
      ========================= */
   const saveAndNext = async () => {
-    if (!userId) return;
+    if (!userId || saving) return;
 
-    await saveOnboarding(userId, 8, {
-      selected_equipment: selected,
-    });
+    setSaving(true);
 
-    window.location.href = '/onboarding/training-schedule';
+    try {
+      await saveOnboarding(userId, 8, {
+        selected_equipment: selected,
+      });
+
+      window.location.assign('/onboarding/training-schedule');
+    } finally {
+      setSaving(false);
+    }
   };
+
+  /* =========================
+     LOADING STATE
+     ========================= */
+  if (loading) {
+    return (
+      <Box
+        minHeight="100vh"
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+        bgcolor="#0F172A"
+      >
+        <CircularProgress sx={{ color: '#22C55E' }} />
+      </Box>
+    );
+  }
 
   /* =========================
      UI
      ========================= */
   return (
-    <Box minHeight="100vh" bgcolor="#0F172A" p={{ xs: 2, md: 4 }} color="#E5E7EB">
+    <Box
+      minHeight="100vh"
+      bgcolor="#0F172A"
+      p={{ xs: 2, md: 4 }}
+      color="#E5E7EB"
+    >
       <Typography variant="h4" fontWeight={800} mb={3}>
         Review & Customize Equipment
       </Typography>
 
       {Object.entries(EQUIPMENT).map(([key, category]) => (
         <Box key={key} mb={4}>
-          <Typography variant="h6" color="#22C55E" fontWeight={700} mb={1.5}>
+          <Typography
+            variant="h6"
+            color="#22C55E"
+            fontWeight={700}
+            mb={1.5}
+          >
             {category.title}
           </Typography>
 
@@ -136,13 +188,17 @@ export default function EquipmentReviewPage() {
 
       {/* NAVIGATION */}
       <Box mt={4} display="flex" justifyContent="space-between">
-        <Button onClick={() => window.history.back()}>Back</Button>
+        <Button onClick={() => window.history.back()} disabled={saving}>
+          Back
+        </Button>
+
         <Button
           variant="contained"
           sx={{ bgcolor: '#22C55E', color: '#020617' }}
           onClick={saveAndNext}
+          disabled={saving}
         >
-          Next
+          {saving ? 'Saving…' : 'Next'}
         </Button>
       </Box>
     </Box>
