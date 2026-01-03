@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Button,
@@ -24,6 +25,7 @@ const INJURIES = [
 ];
 
 export default function InjuriesPage() {
+  const navigate = useNavigate();
   const [userId, setUserId] = useState<string | null>(null);
   const [data, setData] = useState({
     injuries: [] as string[],
@@ -67,11 +69,11 @@ const next = async () => {
     injuries: data,
   });
 
-  window.location.href = '/onboarding/mobility';
+  navigate('/onboarding/mobility', { replace: true });
 };
 
   const prev = () => {
-    window.location.href = '/onboarding/recovery-sleep';
+    navigate('/onboarding/recovery-sleep', { replace: true });
   };
 
   return (

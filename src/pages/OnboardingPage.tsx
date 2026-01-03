@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Box, Button, Typography, Stack } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
 import ProgressBar from '../components/onboarding/ProgressBar';
@@ -52,6 +53,7 @@ const steps = [
 ];
 
 export default function OnboardingPage() {
+  const navigate = useNavigate();
   const [stepIndex, setStepIndex] = useState(0);
   const [answers, setAnswers] = useState<any>({});
   const [userId, setUserId] = useState<string | null>(null);
@@ -81,7 +83,7 @@ const next = async () => {
 
   if (isLastStep) {
     // 🚀 Go to full equipment review page
-    window.location.href = '/onboarding/equipment-review';
+    navigate('/onboarding/equipment-review', { replace: true });
     return;
   }
 

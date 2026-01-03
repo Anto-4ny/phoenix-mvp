@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Button,
@@ -58,6 +59,7 @@ const getReadiness = (score: number) => {
 
 /* -------------------- COMPONENT -------------------- */
 export default function RecoverySleepPage() {
+  const navigate = useNavigate();
   const [userId, setUserId] = useState<string | null>(null);
   const [data, setData] = useState({
     sleep_hours: 7,
@@ -107,11 +109,11 @@ const next = async () => {
     },
   });
 
-  window.location.href = '/onboarding/injuries';
+  navigate('/onboarding/injuries', { replace: true });
 };
 
   const prev = () => {
-    window.location.href = '/onboarding/training-schedule';
+    navigate('/onboarding/training-schedule', { replace: true });
   };
 
   return (

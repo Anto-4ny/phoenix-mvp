@@ -60,7 +60,7 @@ const SignupPage: React.FC = () => {
       setError(error.message);
     } else {
       setSuccessMsg('Account created! Check your email to confirm.');
-      setTimeout(() => navigate('/dashboard'), 1500);
+      setTimeout(() => navigate('/onboarding'), 1500);
     }
   };
 

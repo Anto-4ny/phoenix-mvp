@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Button,
@@ -25,6 +26,7 @@ const FLEXIBILITY_GOALS = [
 ];
 
 export default function MobilityPage() {
+  const navigate = useNavigate();
   const [userId, setUserId] = useState<string | null>(null);
   const [data, setData] = useState({
     mobility: {} as Record<string, number>, // joint => mobility 1–10
@@ -68,11 +70,11 @@ const next = async () => {
     mobility: data,
   });
 
-  window.location.href = '/onboarding/review';
+  navigate('/onboarding/review', { replace: true });
 };
 
   const prev = () => {
-    window.location.href = '/onboarding/injuries';
+    navigate('/onboarding/injuries', { replace: true });
   };
 
   return (

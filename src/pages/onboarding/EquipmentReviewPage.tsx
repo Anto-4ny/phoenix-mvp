@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Typography,
@@ -15,6 +16,7 @@ import { supabase } from '../../supabaseClient';
 import { saveOnboarding } from '../../lib/saveOnboarding';
 
 export default function EquipmentReviewPage() {
+  const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const [selected, setSelected] = useState<Record<string, boolean>>({});
@@ -80,7 +82,7 @@ export default function EquipmentReviewPage() {
         selected_equipment: selected,
       });
 
-      window.location.assign('/onboarding/training-schedule');
+      navigate('/onboarding/training-schedule', { replace: true });
     } finally {
       setSaving(false);
     }

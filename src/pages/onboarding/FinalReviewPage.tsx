@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Typography,
@@ -11,6 +12,7 @@ import {
 import { supabase } from '../../supabaseClient';
 
 export default function FinalReviewPage() {
+  const navigate = useNavigate();
   const [userId, setUserId] = useState<string | null>(null);
   const [answers, setAnswers] = useState<Record<string, any>>({});
 
@@ -61,7 +63,7 @@ export default function FinalReviewPage() {
       })
       .eq('id', userId);
 
-    window.location.href = '/subscription';
+    navigate('/subscription', { replace: true });
   };
 
   const renderAnswer = (value: any) => {

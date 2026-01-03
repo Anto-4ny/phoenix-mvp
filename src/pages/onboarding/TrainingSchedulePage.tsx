@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Typography,
@@ -13,6 +14,7 @@ const DAYS = [
 ];
 
 export default function TrainingSchedulePage() {
+  const navigate = useNavigate();
   const [daysPerWeek, setDaysPerWeek] = useState<string | null>(null);
   const [duration, setDuration] = useState<string | null>(null);
   const [preferredDays, setPreferredDays] = useState<string[]>([]);
@@ -57,7 +59,7 @@ const saveAndNext = async () => {
     },
   }).eq('id', userId);
 
-  window.location.href = '/onboarding/recovery-sleep';
+  navigate('/onboarding/recovery-sleep', { replace: true });
 };
 
 
