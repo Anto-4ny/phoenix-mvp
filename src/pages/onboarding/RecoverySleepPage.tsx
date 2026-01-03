@@ -101,7 +101,7 @@ useEffect(() => {
 const next = async () => {
   if (!userId) return;
 
-  await saveOnboarding(userId, 10, {
+  await saveOnboarding(userId, 8, {
     recovery_sleep: {
       ...data,
       recovery_score: recoveryScore,

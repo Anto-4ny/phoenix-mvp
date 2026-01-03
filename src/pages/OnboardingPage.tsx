@@ -167,7 +167,7 @@ const next = async () => {
       onClick={next}
       sx={{ bgcolor: '#22C55E', color: '#020617' }}
     >
-      {isLastStep ? 'Finish' : 'Next'}
+      {isLastStep ? 'Continue' : 'Next'}
     </Button>
   </Box>
 </Box>

@@ -78,7 +78,7 @@ export default function EquipmentReviewPage() {
     setSaving(true);
 
     try {
-      await saveOnboarding(userId, 8, {
+      await saveOnboarding(userId, 6, {
         selected_equipment: selected,
       });
 

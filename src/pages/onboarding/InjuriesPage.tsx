@@ -65,7 +65,7 @@ useEffect(() => {
 const next = async () => {
   if (!userId) return;
 
-  await saveOnboarding(userId, 11, {
+  await saveOnboarding(userId, 9, {
     injuries: data,
   });
 

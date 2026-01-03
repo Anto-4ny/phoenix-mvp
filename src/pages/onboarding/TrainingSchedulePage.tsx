@@ -47,7 +47,7 @@ const saveAndNext = async () => {
 
   // 2️⃣ Merge + advance step
   await supabase.from('profiles').update({
-    onboarding_step: 9, // NEXT step (Recovery & Sleep)
+    onboarding_step: 7, // NEXT step (Recovery & Sleep)
     onboarding_data: {
       ...profile?.onboarding_data,
       training_schedule: {
