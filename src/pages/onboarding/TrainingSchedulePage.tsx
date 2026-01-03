@@ -6,12 +6,14 @@ import { saveOnboarding } from '../../lib/saveOnboarding';
 const DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
 
 interface ComponentStepProps {
-  userId: string | null; // allow null
+  userId: string | null;
   answers: Record<string, any>;
   setAnswers: React.Dispatch<React.SetStateAction<Record<string, any>>>;
+  nextStep: () => void;   // ← new
+  prevStep: () => void;   // ← new
 }
 
-export default function TrainingSchedulePage({ userId, answers, setAnswers }: ComponentStepProps) {
+export default function TrainingSchedulePage({ userId, answers, setAnswers, nextStep, prevStep }: ComponentStepProps) {
   const navigate = useNavigate();
 
   const [daysPerWeek, setDaysPerWeek] = useState<string | null>(answers.training_schedule?.daysPerWeek || null);
@@ -61,6 +63,7 @@ const saveAndNext = async () => {
 
     // 🚫 DO NOT navigate here
     // OnboardingGate will move the user forward
+    nextStep();
   } finally {
     setSaving(false);
   }

@@ -8,13 +8,15 @@ const STRETCHING_FREQUENCY = ['Never', '1–2 times/week', '3–4 times/week', '
 const FLEXIBILITY_GOALS = ['Increase range of motion', 'Improve posture', 'Prevent injuries', 'Perform specific exercises'];
 
 interface ComponentStepProps {
-  userId: string | null; // allow null
+  userId: string | null;
   answers: Record<string, any>;
   setAnswers: React.Dispatch<React.SetStateAction<Record<string, any>>>;
+  nextStep: () => void;   // ← new
+  prevStep: () => void;   // ← new
 }
 
 
-export default function MobilityPage({ userId, answers, setAnswers }: ComponentStepProps) {
+export default function MobilityPage({ userId, answers, setAnswers, nextStep, prevStep }: ComponentStepProps) {
   const navigate = useNavigate();
   const [data, setData] = useState({
     mobility: answers.mobility?.mobility || {} as Record<string, number>, // joint => mobility 1–10
@@ -42,11 +44,13 @@ const next = async () => {
 
   // Save ONLY
   await saveOnboarding(userId, 10, updatedAnswers);
+  nextStep();
 
   // 🚫 no navigate here
 };
 
 const prev = () => {
+  prevStep();
   // 🚫 no navigate here
 };
 

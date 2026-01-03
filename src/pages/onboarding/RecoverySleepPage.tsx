@@ -13,11 +13,12 @@ import {
 import { saveOnboarding } from '../../lib/saveOnboarding';
 
 interface ComponentStepProps {
-  userId: string | null; // allow null
+  userId: string | null;
   answers: Record<string, any>;
   setAnswers: React.Dispatch<React.SetStateAction<Record<string, any>>>;
+  nextStep: () => void;   // ← new
+  prevStep: () => void;   // ← new
 }
-
 
 const calculateRecoveryScore = (d: any) => {
   const sleepScore = Math.min(30, Math.max(0, ((d.sleep_hours - 4) / 6) * 30));
@@ -41,7 +42,7 @@ const getReadiness = (score: number) => {
   return { label: 'Compromised', color: '#EF4444' };
 };
 
-export default function RecoverySleepPage({ userId, answers, setAnswers }: ComponentStepProps) {
+export default function RecoverySleepPage({ userId, answers, setAnswers, nextStep, prevStep }: ComponentStepProps) {
   const navigate = useNavigate();
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(!answers.recovery_sleep);
@@ -86,12 +87,16 @@ const next = async () => {
 
     // 🚫 DO NOT navigate here
     // OnboardingGate will handle moving to "injuries"
+    nextStep();
   } finally {
     setSaving(false);
   }
 };
 
-  const prev = () => navigate('/onboarding/training-schedule', { replace: true });
+const prev = () => {
+  prevStep();
+  // 🚫 no navigate here
+};
 
   if (loading) {
     return (
@@ -156,3 +161,7 @@ const next = async () => {
     </Box>
   );
 }
+function nextStep() {
+  throw new Error('Function not implemented.');
+}
+

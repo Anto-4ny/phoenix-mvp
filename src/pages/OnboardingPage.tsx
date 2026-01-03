@@ -19,7 +19,10 @@ interface ComponentStepProps {
   userId: string | null;
   answers: Record<string, any>;
   setAnswers: React.Dispatch<React.SetStateAction<Record<string, any>>>;
+  nextStep: () => void;   // ← new
+  prevStep: () => void;   // ← new
 }
+
 
 // Step interface
 interface Step {
@@ -173,11 +176,13 @@ export default function OnboardingPage() {
             </>
           ) : (
             step.component && (
-              <step.component
-                userId={userId}
-                answers={answers}
-                setAnswers={setAnswers}
-              />
+                <step.component
+                  userId={userId}
+                  answers={answers}
+                  setAnswers={setAnswers}
+                  nextStep={next}
+                  prevStep={prev}
+                />
             )
           )}
           </motion.div>

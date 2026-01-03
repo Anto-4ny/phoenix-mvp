@@ -16,12 +16,14 @@ import { saveOnboarding } from '../../lib/saveOnboarding';
 import { supabase } from '../../supabaseClient';
 
 interface ComponentStepProps {
-  userId: string | null; // allow null
+  userId: string | null;
   answers: Record<string, any>;
   setAnswers: React.Dispatch<React.SetStateAction<Record<string, any>>>;
+  nextStep: () => void;   // ← new
+  prevStep: () => void;   // ← new
 }
 
-export default function EquipmentReviewPage({ userId, answers, setAnswers }: ComponentStepProps) {
+export default function EquipmentReviewPage({ userId, answers, setAnswers, nextStep, prevStep }: ComponentStepProps) {
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
@@ -84,7 +86,7 @@ const saveAndNext = async () => {
     await saveOnboarding(userId, 6, {
       selected_equipment: selected,
     });
-
+nextStep();
     // ✅ Let OnboardingPage / Gate handle the next step
   } finally {
     setSaving(false);

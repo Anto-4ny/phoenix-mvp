@@ -8,12 +8,14 @@ const INJURIES = [
 ];
 
 interface ComponentStepProps {
-  userId: string | null; // allow null
+  userId: string | null;
   answers: Record<string, any>;
   setAnswers: React.Dispatch<React.SetStateAction<Record<string, any>>>;
+  nextStep: () => void;   // ← new
+  prevStep: () => void;   // ← new
 }
 
-export default function InjuriesPage({ userId, answers, setAnswers }: ComponentStepProps) {
+export default function InjuriesPage({ userId, answers, setAnswers, nextStep, prevStep }: ComponentStepProps) {
   const navigate = useNavigate();
   const [data, setData] = useState({
     injuries: answers.injuries?.injuries || [] as string[],
@@ -38,11 +40,12 @@ const next = async () => {
 
   // Save ONLY
   await saveOnboarding(userId, 9, updatedAnswers);
-
+  nextStep();
   // 🚫 no navigate here
 };
 
 const prev = () => {
+  prevStep();
   // 🚫 no navigate here
   // Back navigation is handled by OnboardingPage / SwipeWrapper
 };
