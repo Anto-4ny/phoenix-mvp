@@ -147,29 +147,39 @@ export default function OnboardingPage() {
             exit={{ x: -100, opacity: 0 }}
             transition={{ duration: 0.4 }}
           >
-            {/* Simple Steps */}
-            {step.type === 'simple' ? (
-              <>
-                <Typography variant="h4" mt={6} mb={4} fontWeight={700} color="#E5E7EB">
-                  {step.title}
-                </Typography>
-                <Stack spacing={2}>
-                  {step.options?.map((o: string) => (
-                    <StepCard
-                      key={o}
-                      label={o}
-                      selected={answers[step.key] === o}
-                      onClick={() => select(o)}
-                    />
-                  ))}
-                </Stack>
-              </>
-            ) : (
-              // Component-based steps
-              step.component && (
-                <step.component userId={userId} answers={answers} setAnswers={setAnswers} />
-              )
-            )}
+            {/* Step Content */}
+          {step.type === 'simple' ? (
+            <>
+              <Typography
+                variant="h4"
+                mt={6}
+                mb={4}
+                fontWeight={700}
+                color="#E5E7EB"
+              >
+                {step.title}
+              </Typography>
+
+              <Stack spacing={2}>
+                {step.options?.map((o) => (
+                  <StepCard
+                    key={o}
+                    label={o}
+                    selected={answers[step.key] === o}
+                    onClick={() => select(o)}
+                  />
+                ))}
+              </Stack>
+            </>
+          ) : (
+            step.component && (
+              <step.component
+                userId={userId}
+                answers={answers}
+                setAnswers={setAnswers}
+              />
+            )
+          )}
           </motion.div>
         </AnimatePresence>
       </SwipeWrapper>
