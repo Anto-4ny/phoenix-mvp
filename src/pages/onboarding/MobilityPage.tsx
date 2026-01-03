@@ -1,55 +1,26 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  Box,
-  Button,
-  Typography,
-  Stack,
-  Slider,
-  Chip,
-} from '@mui/material';
-import { supabase } from '../../supabaseClient';
+import { Box, Button, Typography, Stack, Slider, Chip } from '@mui/material';
 import { saveOnboarding } from '../../lib/saveOnboarding';
 
 const JOINTS = ['Shoulders', 'Hips', 'Knees', 'Ankles', 'Wrists', 'Neck'];
-const STRETCHING_FREQUENCY = [
-  'Never',
-  '1–2 times/week',
-  '3–4 times/week',
-  'Daily',
-];
-const FLEXIBILITY_GOALS = [
-  'Increase range of motion',
-  'Improve posture',
-  'Prevent injuries',
-  'Perform specific exercises',
-];
+const STRETCHING_FREQUENCY = ['Never', '1–2 times/week', '3–4 times/week', 'Daily'];
+const FLEXIBILITY_GOALS = ['Increase range of motion', 'Improve posture', 'Prevent injuries', 'Perform specific exercises'];
 
-export default function MobilityPage() {
+interface ComponentStepProps {
+  userId: string | null; // allow null
+  answers: Record<string, any>;
+  setAnswers: React.Dispatch<React.SetStateAction<Record<string, any>>>;
+}
+
+
+export default function MobilityPage({ userId, answers, setAnswers }: ComponentStepProps) {
   const navigate = useNavigate();
-  const [userId, setUserId] = useState<string | null>(null);
   const [data, setData] = useState({
-    mobility: {} as Record<string, number>, // joint => mobility 1–10
-    stretching: '' as string,
-    flexibilityGoals: [] as string[],
+    mobility: answers.mobility?.mobility || {} as Record<string, number>, // joint => mobility 1–10
+    stretching: answers.mobility?.stretching || '',
+    flexibilityGoals: answers.mobility?.flexibilityGoals || [] as string[],
   });
-
-useEffect(() => {
-  supabase.auth.getUser().then(async ({ data: auth }) => {
-    if (!auth.user) return;
-    setUserId(auth.user.id);
-
-    const { data: saved } = await supabase
-      .from('profiles')
-      .select('onboarding_data')
-      .eq('id', auth.user.id)
-      .single();
-
-    if (saved?.onboarding_data?.mobility) {
-      setData(saved.onboarding_data.mobility);
-    }
-  });
-}, []);
 
   const toggleGoal = (goal: string) => {
     setData((prev) => {
@@ -57,32 +28,27 @@ useEffect(() => {
       return {
         ...prev,
         flexibilityGoals: exists
-          ? prev.flexibilityGoals.filter((g) => g !== goal)
+          ? prev.flexibilityGoals.filter((g: string) => g !== goal)
           : [...prev.flexibilityGoals, goal],
       };
     });
   };
 
-const next = async () => {
-  if (!userId) return;
+  const next = async () => {
+    if (!userId) return;
 
-  await saveOnboarding(userId, 10, {
-    mobility: data,
-  });
+    const updatedAnswers = { ...answers, mobility: data };
+    setAnswers(updatedAnswers);
 
-  navigate('/onboarding/review', { replace: true });
-};
+    await saveOnboarding(userId, 10, updatedAnswers);
 
-  const prev = () => {
-    navigate('/onboarding/injuries', { replace: true });
+    navigate('/onboarding/review', { replace: true });
   };
 
+  const prev = () => navigate('/onboarding/injuries', { replace: true });
+
   return (
-    <Box
-      minHeight="100vh"
-      px={{ xs: 2, md: 4 }}
-      py={4}
-      bgcolor="#0F172A"
+    <Box minHeight="100vh" px={{ xs: 2, md: 4 }} py={4} bgcolor="#0F172A"
       sx={{ background: 'radial-gradient(circle at top, #020617, #0F172A)' }}
     >
       <Typography variant="h4" fontWeight={700} color="#E5E7EB" mb={4}>
@@ -98,19 +64,13 @@ const next = async () => {
           <Stack spacing={3}>
             {JOINTS.map((joint) => (
               <Box key={joint}>
-                <Typography color="#38BDF8" mb={0.5}>
-                  {joint}
-                </Typography>
+                <Typography color="#38BDF8" mb={0.5}>{joint}</Typography>
                 <Slider
-                  min={1}
-                  max={10}
-                  value={data.mobility[joint] || 5}
-                  onChange={(_, v) =>
-                    setData((prev) => ({
-                      ...prev,
-                      mobility: { ...prev.mobility, [joint]: v },
-                    }))
-                  }
+                  min={1} max={10} value={data.mobility[joint] || 5}
+                  onChange={(_, v) => setData(prev => ({
+                    ...prev,
+                    mobility: { ...prev.mobility, [joint]: v },
+                  }))}
                   valueLabelDisplay="auto"
                   sx={{ color: '#22C55E' }}
                 />
@@ -121,17 +81,12 @@ const next = async () => {
 
         {/* Stretching Frequency */}
         <Box>
-          <Typography color="#CBD5F5" mb={1}>
-            How often do you stretch?
-          </Typography>
+          <Typography color="#CBD5F5" mb={1}>How often do you stretch?</Typography>
           <Stack direction="row" spacing={1} flexWrap="wrap">
             {STRETCHING_FREQUENCY.map((freq) => (
               <Chip
-                key={freq}
-                label={freq}
-                clickable
-                color={data.stretching === freq ? 'success' : 'default'}
-                onClick={() => setData((prev) => ({ ...prev, stretching: freq }))}
+                key={freq} label={freq} clickable
+                onClick={() => setData(prev => ({ ...prev, stretching: freq }))}
                 sx={{
                   mb: 1,
                   bgcolor: data.stretching === freq ? '#22C55E' : '#1F2937',
@@ -144,22 +99,15 @@ const next = async () => {
 
         {/* Flexibility Goals */}
         <Box>
-          <Typography color="#CBD5F5" mb={1}>
-            Flexibility goals (select all that apply)
-          </Typography>
+          <Typography color="#CBD5F5" mb={1}>Flexibility goals (select all that apply)</Typography>
           <Stack direction="row" spacing={1} flexWrap="wrap">
             {FLEXIBILITY_GOALS.map((goal) => (
               <Chip
-                key={goal}
-                label={goal}
-                clickable
-                color={data.flexibilityGoals.includes(goal) ? 'success' : 'default'}
+                key={goal} label={goal} clickable
                 onClick={() => toggleGoal(goal)}
                 sx={{
                   mb: 1,
-                  bgcolor: data.flexibilityGoals.includes(goal)
-                    ? '#22C55E'
-                    : '#1F2937',
+                  bgcolor: data.flexibilityGoals.includes(goal) ? '#22C55E' : '#1F2937',
                   color: '#E5E7EB',
                 }}
               />

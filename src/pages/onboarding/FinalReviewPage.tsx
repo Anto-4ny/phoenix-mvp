@@ -1,15 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  Box,
-  Typography,
-  Stack,
-  Button,
-  Card,
-  CardContent,
-  Chip,
-} from '@mui/material';
+import { Box, Button, Typography, Stack, Card, CardContent, Chip } from '@mui/material';
 import { supabase } from '../../supabaseClient';
+import { saveOnboarding } from '../../lib/saveOnboarding';
 
 export default function FinalReviewPage() {
   const navigate = useNavigate();
@@ -22,6 +15,7 @@ export default function FinalReviewPage() {
 
       setUserId(data.user.id);
 
+      // Load onboarding data once
       const { data: profile } = await supabase
         .from('profiles')
         .select('onboarding_data')
@@ -34,6 +28,7 @@ export default function FinalReviewPage() {
     });
   }, []);
 
+  // Edit a specific step
   const editStep = (key: string) => {
     const routes: Record<string, string> = {
       goal: '/onboarding',
@@ -49,9 +44,18 @@ export default function FinalReviewPage() {
     };
 
     const route = routes[key];
-    if (route) window.location.href = route;
+    if (route) navigate(route);
   };
 
+  // Save any changes immediately if needed
+  const updateAnswer = async (key: string, value: any) => {
+    if (!userId) return;
+    const updated = { ...answers, [key]: value };
+    setAnswers(updated);
+    await saveOnboarding(userId, 999, updated); // 999 = final step
+  };
+
+  // Finish onboarding
   const finish = async () => {
     if (!userId) return;
 
@@ -66,16 +70,13 @@ export default function FinalReviewPage() {
     navigate('/subscription', { replace: true });
   };
 
+  // Render nested answers nicely
   const renderAnswer = (value: any) => {
     if (Array.isArray(value)) {
       return (
         <Stack direction="row" spacing={1} flexWrap="wrap">
           {value.map((v) => (
-            <Chip
-              key={v}
-              label={v}
-              sx={{ bgcolor: '#22C55E', color: '#020617' }}
-            />
+            <Chip key={v} label={v} sx={{ bgcolor: '#22C55E', color: '#020617' }} />
           ))}
         </Stack>
       );
@@ -100,13 +101,7 @@ export default function FinalReviewPage() {
   };
 
   return (
-    <Box
-      minHeight="100vh"
-      px={3}
-      py={4}
-      bgcolor="#0F172A"
-      sx={{ background: 'radial-gradient(circle at top, #020617, #0F172A)' }}
-    >
+    <Box minHeight="100vh" px={3} py={4} bgcolor="#0F172A" sx={{ background: 'radial-gradient(circle at top, #020617, #0F172A)' }}>
       <Typography variant="h4" fontWeight={800} color="#E5E7EB" mb={4}>
         Final Onboarding Review
       </Typography>
@@ -115,27 +110,14 @@ export default function FinalReviewPage() {
         {Object.entries(answers).map(([key, value]) => (
           <Card key={key} sx={{ bgcolor: '#1E293B', color: '#E5E7EB' }}>
             <CardContent>
-              <Box
-                display="flex"
-                justifyContent="space-between"
-                alignItems="center"
-              >
-                <Typography
-                  variant="h6"
-                  fontWeight={700}
-                  color="#22C55E"
-                >
+              <Box display="flex" justifyContent="space-between" alignItems="center">
+                <Typography variant="h6" fontWeight={700} color="#22C55E">
                   {key.replace(/_/g, ' ').toUpperCase()}
                 </Typography>
-                <Button
-                  size="small"
-                  sx={{ color: '#38BDF8' }}
-                  onClick={() => editStep(key)}
-                >
+                <Button size="small" sx={{ color: '#38BDF8' }} onClick={() => editStep(key)}>
                   Edit
                 </Button>
               </Box>
-
               <Box mt={2}>{renderAnswer(value)}</Box>
             </CardContent>
           </Card>
@@ -146,15 +128,9 @@ export default function FinalReviewPage() {
         <Button
           variant="contained"
           onClick={finish}
-          sx={{
-            bgcolor: '#22C55E',
-            color: '#020617',
-            px: 6,
-            py: 1.8,
-            fontWeight: 700,
-          }}
+          sx={{ bgcolor: '#22C55E', color: '#020617', px: 6, py: 1.8, fontWeight: 700 }}
         >
-          Continue to Subscription
+          Confirm and complete the onboarding
         </Button>
       </Box>
     </Box>

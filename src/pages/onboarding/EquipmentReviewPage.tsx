@@ -8,57 +8,57 @@ import {
   Button,
   InputAdornment,
   CircularProgress,
+  Grid as Grid,
 } from '@mui/material';
-import Grid from '@mui/material/Grid';
 import SearchIcon from '@mui/icons-material/Search';
 import { EQUIPMENT } from '../../data/equipment';
-import { supabase } from '../../supabaseClient';
 import { saveOnboarding } from '../../lib/saveOnboarding';
+import { supabase } from '../../supabaseClient';
 
-export default function EquipmentReviewPage() {
+interface ComponentStepProps {
+  userId: string | null; // allow null
+  answers: Record<string, any>;
+  setAnswers: React.Dispatch<React.SetStateAction<Record<string, any>>>;
+}
+
+export default function EquipmentReviewPage({ userId, answers, setAnswers }: ComponentStepProps) {
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
-  const [selected, setSelected] = useState<Record<string, boolean>>({});
-  const [userId, setUserId] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [selected, setSelected] = useState<Record<string, boolean>>(answers.selected_equipment || {});
+  const [loading, setLoading] = useState(!answers.selected_equipment);
   const [saving, setSaving] = useState(false);
 
   /* =========================
-     LOAD USER + SAVED DATA
+     LOAD SAVED DATA IF NEEDED
      ========================= */
   useEffect(() => {
     let mounted = true;
 
     const load = async () => {
-      const { data: auth } = await supabase.auth.getUser();
-      const id = auth.user?.id;
-
-      if (!id || !mounted) {
+      if (answers.selected_equipment || !mounted) {
         setLoading(false);
         return;
       }
 
-      setUserId(id);
-
-      const { data: profile } = await supabase
-        .from('profiles')
+      const { data: profile } = await supabase.from('profiles')
         .select('onboarding_data')
-        .eq('id', id)
+        .eq('id', userId)
         .single();
 
       if (mounted) {
-        setSelected(profile?.onboarding_data?.selected_equipment || {});
+        const savedEquipment = profile?.onboarding_data?.selected_equipment || {};
+        setSelected(savedEquipment);
+        setAnswers({ ...answers, selected_equipment: savedEquipment });
         setLoading(false);
       }
     };
 
     load();
-
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [userId, answers, setAnswers]);
 
   /* =========================
      HELPERS
@@ -66,11 +66,14 @@ export default function EquipmentReviewPage() {
   const toggleExpand = (key: string) =>
     setExpanded((p) => ({ ...p, [key]: !p[key] }));
 
-  const toggleSelect = (item: string) =>
-    setSelected((p) => ({ ...p, [item]: !p[item] }));
+  const toggleSelect = (item: string) => {
+    const updated = { ...selected, [item]: !selected[item] };
+    setSelected(updated);
+    setAnswers({ ...answers, selected_equipment: updated });
+  };
 
   /* =========================
-     SAVE & CONTINUE
+     SAVE & NEXT
      ========================= */
   const saveAndNext = async () => {
     if (!userId || saving) return;
@@ -78,10 +81,7 @@ export default function EquipmentReviewPage() {
     setSaving(true);
 
     try {
-      await saveOnboarding(userId, 6, {
-        selected_equipment: selected,
-      });
-
+      await saveOnboarding(userId, 6, { selected_equipment: selected });
       navigate('/onboarding/training-schedule', { replace: true });
     } finally {
       setSaving(false);
@@ -109,24 +109,14 @@ export default function EquipmentReviewPage() {
      UI
      ========================= */
   return (
-    <Box
-      minHeight="100vh"
-      bgcolor="#0F172A"
-      p={{ xs: 2, md: 4 }}
-      color="#E5E7EB"
-    >
+    <Box minHeight="100vh" bgcolor="#0F172A" p={{ xs: 2, md: 4 }} color="#E5E7EB">
       <Typography variant="h4" fontWeight={800} mb={3}>
         Review & Customize Equipment
       </Typography>
 
       {Object.entries(EQUIPMENT).map(([key, category]) => (
         <Box key={key} mb={4}>
-          <Typography
-            variant="h6"
-            color="#22C55E"
-            fontWeight={700}
-            mb={1.5}
-          >
+          <Typography variant="h6" color="#22C55E" fontWeight={700} mb={1.5}>
             {category.title}
           </Typography>
 
@@ -138,9 +128,8 @@ export default function EquipmentReviewPage() {
               .slice(0, expanded[key] ? undefined : 3)
               .map((item) => {
                 const isSelected = !!selected[item];
-
                 return (
-                  <Grid key={item} size={{ xs: 12, sm: 6, md: 4 }}>
+                  <Grid size={{ xs: 12, sm: 6, md: 4 }} key={item}>
                     <Chip
                       label={item}
                       clickable
@@ -190,7 +179,7 @@ export default function EquipmentReviewPage() {
 
       {/* NAVIGATION */}
       <Box mt={4} display="flex" justifyContent="space-between">
-        <Button onClick={() => window.history.back()} disabled={saving}>
+        <Button onClick={() => navigate(-1)} disabled={saving}>
           Back
         </Button>
 

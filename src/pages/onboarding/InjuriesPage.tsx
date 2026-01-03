@@ -1,89 +1,50 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  Box,
-  Button,
-  Typography,
-  Stack,
-  Slider,
-  Chip,
-  TextField,
-} from '@mui/material';
-import { supabase } from '../../supabaseClient';
+import { Box, Button, Typography, Stack, Slider, Chip, TextField } from '@mui/material';
 import { saveOnboarding } from '../../lib/saveOnboarding';
 
 const INJURIES = [
-  'Lower back',
-  'Knee',
-  'Shoulder',
-  'Elbow',
-  'Wrist',
-  'Neck',
-  'Hip',
-  'Ankle',
-  'Other',
+  'Lower back', 'Knee', 'Shoulder', 'Elbow', 'Wrist', 'Neck', 'Hip', 'Ankle', 'Other'
 ];
 
-export default function InjuriesPage() {
+interface ComponentStepProps {
+  userId: string | null; // allow null
+  answers: Record<string, any>;
+  setAnswers: React.Dispatch<React.SetStateAction<Record<string, any>>>;
+}
+
+export default function InjuriesPage({ userId, answers, setAnswers }: ComponentStepProps) {
   const navigate = useNavigate();
-  const [userId, setUserId] = useState<string | null>(null);
   const [data, setData] = useState({
-    injuries: [] as string[],
-    pain_level: 5,
-    limitations: '' as string,
+    injuries: answers.injuries?.injuries || [] as string[],
+    pain_level: answers.injuries?.pain_level || 5,
+    limitations: answers.injuries?.limitations || '',
   });
-
-useEffect(() => {
-  supabase.auth.getUser().then(async ({ data: auth }) => {
-    if (!auth.user) return;
-    setUserId(auth.user.id);
-
-    const { data: saved } = await supabase
-      .from('profiles')
-      .select('onboarding_data')
-      .eq('id', auth.user.id)
-      .single();
-
-    if (saved?.onboarding_data?.injuries) {
-      setData(saved.onboarding_data.injuries);
-    }
-  });
-}, []);
 
   const toggleInjury = (injury: string) => {
-    setData((prev) => {
-      const exists = prev.injuries.includes(injury);
-      return {
-        ...prev,
-        injuries: exists
-          ? prev.injuries.filter((i) => i !== injury)
-          : [...prev.injuries, injury],
-      };
-    });
+    setData((prev) => ({
+      ...prev,
+      injuries: prev.injuries.includes(injury)
+        ? prev.injuries.filter((i: string) => i !== injury)
+        : [...prev.injuries, injury],
+    }));
   };
 
-const next = async () => {
-  if (!userId) return;
+  const next = async () => {
+    if (!userId) return;
 
-  await saveOnboarding(userId, 9, {
-    injuries: data,
-  });
+    const updatedAnswers = { ...answers, injuries: data };
+    setAnswers(updatedAnswers);
 
-  navigate('/onboarding/mobility', { replace: true });
-};
+    await saveOnboarding(userId, 9, updatedAnswers);
 
-  const prev = () => {
-    navigate('/onboarding/recovery-sleep', { replace: true });
+    navigate('/onboarding/mobility', { replace: true });
   };
+
+  const prev = () => navigate('/onboarding/recovery-sleep', { replace: true });
 
   return (
-    <Box
-      minHeight="100vh"
-      px={3}
-      py={4}
-      bgcolor="#0F172A"
-      sx={{ background: 'radial-gradient(circle at top, #020617, #0F172A)' }}
-    >
+    <Box minHeight="100vh" px={3} py={4} bgcolor="#0F172A" sx={{ background: 'radial-gradient(circle at top, #020617, #0F172A)' }}>
       <Typography variant="h4" fontWeight={700} color="#E5E7EB" mb={4}>
         Injuries & Limitations
       </Typography>
@@ -91,22 +52,17 @@ const next = async () => {
       <Stack spacing={5}>
         {/* Select Injuries */}
         <Box>
-          <Typography color="#CBD5F5" mb={1}>
-            Select any injuries or chronic pain areas
-          </Typography>
+          <Typography color="#CBD5F5" mb={1}>Select any injuries or chronic pain areas</Typography>
           <Stack direction="row" spacing={1} flexWrap="wrap">
             {INJURIES.map((inj) => (
               <Chip
                 key={inj}
                 label={inj}
                 clickable
-                color={data.injuries.includes(inj) ? 'success' : 'default'}
                 onClick={() => toggleInjury(inj)}
                 sx={{
                   mb: 1,
-                  bgcolor: data.injuries.includes(inj)
-                    ? '#22C55E'
-                    : '#1F2937',
+                  bgcolor: data.injuries.includes(inj) ? '#22C55E' : '#1F2937',
                   color: '#E5E7EB',
                 }}
               />
@@ -116,9 +72,7 @@ const next = async () => {
 
         {/* Pain Level */}
         <Box>
-          <Typography color="#CBD5F5" mb={1}>
-            Pain level (1 = minimal, 10 = severe)
-          </Typography>
+          <Typography color="#CBD5F5" mb={1}>Pain level (1 = minimal, 10 = severe)</Typography>
           <Slider
             min={1}
             max={10}
@@ -131,25 +85,15 @@ const next = async () => {
 
         {/* Limitations Text */}
         <Box>
-          <Typography color="#CBD5F5" mb={1}>
-            Other limitations or notes
-          </Typography>
+          <Typography color="#CBD5F5" mb={1}>Other limitations or notes</Typography>
           <TextField
             fullWidth
             multiline
             rows={3}
             placeholder="E.g., cannot perform overhead lifts, need low-impact exercises"
             value={data.limitations}
-            onChange={(e) =>
-              setData((prev) => ({ ...prev, limitations: e.target.value }))
-            }
-            InputProps={{
-              sx: {
-                color: '#E5E7EB',
-                bgcolor: '#1F2937',
-              },
-            }}
-            InputLabelProps={{ sx: { color: '#38BDF8' } }}
+            onChange={(e) => setData((prev) => ({ ...prev, limitations: e.target.value }))}
+            InputProps={{ sx: { color: '#E5E7EB', bgcolor: '#1F2937' } }}
           />
         </Box>
       </Stack>
