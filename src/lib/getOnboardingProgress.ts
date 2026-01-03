@@ -1,11 +1,17 @@
 import { supabase } from '../supabaseClient';
 
-export async function getOnboardingProgress(userId: string) {
-  const { data } = await supabase
+export const getOnboardingProgress = async (userId: string) => {
+  const { data, error } = await supabase
     .from('profiles')
-    .select('onboarding_step, onboarding_data, onboarding_completed')
+    .select('onboarding_step, onboarding_completed')
     .eq('id', userId)
-    .single();
+    .maybeSingle();
+
+  if (error) {
+    console.error('Onboarding progress error:', error);
+    return null;
+  }
 
   return data;
-}
+};
+

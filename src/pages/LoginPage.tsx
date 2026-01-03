@@ -57,6 +57,23 @@ const LoginPage: React.FC = () => {
     }
   };
 
+  const ensureProfile = async (userId: string) => {
+  const { data } = await supabase
+    .from('profiles')
+    .select('id')
+    .eq('id', userId)
+    .maybeSingle();
+
+  if (!data) {
+    await supabase.from('profiles').insert({
+      id: userId,
+      onboarding_data: {},
+      onboarding_step: 0,
+      onboarding_completed: false,
+    });
+  }
+};
+
   const handlePasswordToggle = () => {
     setShowPassword((prev) => !prev);
   };

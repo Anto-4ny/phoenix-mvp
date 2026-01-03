@@ -9,7 +9,7 @@ export async function saveOnboarding(
     .from('profiles')
     .select('onboarding_data')
     .eq('id', userId)
-    .single();
+    .maybeSingle();
 
   const mergedData = {
     ...(existing?.onboarding_data || {}),
