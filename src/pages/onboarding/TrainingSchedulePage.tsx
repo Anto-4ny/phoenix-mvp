@@ -36,25 +36,35 @@ export default function TrainingSchedulePage({ userId, answers, setAnswers }: Co
     setPreferredDays(updated);
   };
 
-  const saveAndNext = async () => {
-    if (!userId || saving) return;
-    setSaving(true);
+const saveAndNext = async () => {
+  if (!userId || saving) return;
+  setSaving(true);
 
-    try {
-      const updatedSchedule = { daysPerWeek, duration, preferredDays, timeOfDay };
-      // Update global answers
-      const updatedAnswers = { ...answers, training_schedule: updatedSchedule };
-      setAnswers(updatedAnswers);
+  try {
+    const updatedSchedule = {
+      daysPerWeek,
+      duration,
+      preferredDays,
+      timeOfDay,
+    };
 
-      // Save to backend
-      await saveOnboarding(userId, 7, updatedAnswers);
+    // Update global answers
+    const updatedAnswers = {
+      ...answers,
+      training_schedule: updatedSchedule,
+    };
 
-      // Go to next step
-      navigate('/onboarding/recovery-sleep', { replace: true });
-    } finally {
-      setSaving(false);
-    }
-  };
+    setAnswers(updatedAnswers);
+
+    // Save step progress
+    await saveOnboarding(userId, 7, updatedAnswers);
+
+    // 🚫 DO NOT navigate here
+    // OnboardingGate will move the user forward
+  } finally {
+    setSaving(false);
+  }
+};
 
   if (loading) {
     return (

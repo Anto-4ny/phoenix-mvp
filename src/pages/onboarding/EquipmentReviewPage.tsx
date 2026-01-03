@@ -75,18 +75,21 @@ export default function EquipmentReviewPage({ userId, answers, setAnswers }: Com
   /* =========================
      SAVE & NEXT
      ========================= */
-  const saveAndNext = async () => {
-    if (!userId || saving) return;
+const saveAndNext = async () => {
+  if (!userId || saving) return;
 
-    setSaving(true);
+  setSaving(true);
 
-    try {
-      await saveOnboarding(userId, 6, { selected_equipment: selected });
-      navigate('/onboarding/training-schedule', { replace: true });
-    } finally {
-      setSaving(false);
-    }
-  };
+  try {
+    await saveOnboarding(userId, 6, {
+      selected_equipment: selected,
+    });
+
+    // ✅ Let OnboardingPage / Gate handle the next step
+  } finally {
+    setSaving(false);
+  }
+};
 
   /* =========================
      LOADING STATE

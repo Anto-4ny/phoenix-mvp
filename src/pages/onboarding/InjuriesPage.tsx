@@ -30,18 +30,22 @@ export default function InjuriesPage({ userId, answers, setAnswers }: ComponentS
     }));
   };
 
-  const next = async () => {
-    if (!userId) return;
+const next = async () => {
+  if (!userId) return;
 
-    const updatedAnswers = { ...answers, injuries: data };
-    setAnswers(updatedAnswers);
+  const updatedAnswers = { ...answers, injuries: data };
+  setAnswers(updatedAnswers);
 
-    await saveOnboarding(userId, 9, updatedAnswers);
+  // Save ONLY
+  await saveOnboarding(userId, 9, updatedAnswers);
 
-    navigate('/onboarding/mobility', { replace: true });
-  };
+  // 🚫 no navigate here
+};
 
-  const prev = () => navigate('/onboarding/recovery-sleep', { replace: true });
+const prev = () => {
+  // 🚫 no navigate here
+  // Back navigation is handled by OnboardingPage / SwipeWrapper
+};
 
   return (
     <Box minHeight="100vh" px={3} py={4} bgcolor="#0F172A" sx={{ background: 'radial-gradient(circle at top, #020617, #0F172A)' }}>

@@ -29,31 +29,42 @@ export default function FinalReviewPage() {
   }, []);
 
   // Edit a specific step
-  const editStep = (key: string) => {
-    const routes: Record<string, string> = {
-      goal: '/onboarding',
-      routine: '/onboarding',
-      experience: '/onboarding',
-      location: '/onboarding',
-      equipment_access: '/onboarding',
-      selected_equipment: '/onboarding/equipment-review',
-      training_schedule: '/onboarding/training-schedule',
-      recovery_sleep: '/onboarding/recovery-sleep',
-      injuries: '/onboarding/injuries',
-      mobility: '/onboarding/mobility',
-    };
+const editStep = async (key: string) => {
+  if (!userId) return;
 
-    const route = routes[key];
-    if (route) navigate(route);
+  const STEP_INDEX_MAP: Record<string, number> = {
+    goal: 0,
+    routine: 1,
+    experience: 2,
+    location: 3,
+    equipment_access: 4,
+    selected_equipment: 5,
+    training_schedule: 6,
+    recovery_sleep: 7,
+    injuries: 8,
+    mobility: 9,
   };
+
+  const stepIndex = STEP_INDEX_MAP[key];
+  if (stepIndex === undefined) return;
+
+  await supabase
+    .from('profiles')
+    .update({ onboarding_step: stepIndex })
+    .eq('id', userId);
+
+  // 🚀 Let OnboardingGate handle redirection
+  navigate('/onboarding', { replace: true });
+};
+
 
   // Save any changes immediately if needed
-  const updateAnswer = async (key: string, value: any) => {
-    if (!userId) return;
-    const updated = { ...answers, [key]: value };
-    setAnswers(updated);
-    await saveOnboarding(userId, 999, updated); // 999 = final step
-  };
+  //const updateAnswer = async (key: string, value: any) => {
+   // if (!userId) return;
+   // const updated = { ...answers, [key]: value };
+   // setAnswers(updated);
+  //  await saveOnboarding(userId, 999, updated); // 999 = final step
+ // };
 
   // Finish onboarding
   const finish = async () => {

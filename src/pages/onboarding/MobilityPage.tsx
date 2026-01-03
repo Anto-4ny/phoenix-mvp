@@ -34,18 +34,21 @@ export default function MobilityPage({ userId, answers, setAnswers }: ComponentS
     });
   };
 
-  const next = async () => {
-    if (!userId) return;
+const next = async () => {
+  if (!userId) return;
 
-    const updatedAnswers = { ...answers, mobility: data };
-    setAnswers(updatedAnswers);
+  const updatedAnswers = { ...answers, mobility: data };
+  setAnswers(updatedAnswers);
 
-    await saveOnboarding(userId, 10, updatedAnswers);
+  // Save ONLY
+  await saveOnboarding(userId, 10, updatedAnswers);
 
-    navigate('/onboarding/review', { replace: true });
-  };
+  // 🚫 no navigate here
+};
 
-  const prev = () => navigate('/onboarding/injuries', { replace: true });
+const prev = () => {
+  // 🚫 no navigate here
+};
 
   return (
     <Box minHeight="100vh" px={{ xs: 2, md: 4 }} py={4} bgcolor="#0F172A"

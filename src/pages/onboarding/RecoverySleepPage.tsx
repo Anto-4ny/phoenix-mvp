@@ -65,24 +65,31 @@ export default function RecoverySleepPage({ userId, answers, setAnswers }: Compo
   const recoveryScore = useMemo(() => calculateRecoveryScore(data), [data]);
   const readiness = getReadiness(recoveryScore);
 
-  const next = async () => {
-    if (!userId || saving) return;
-    setSaving(true);
+const next = async () => {
+  if (!userId || saving) return;
+  setSaving(true);
 
-    try {
-      const updatedAnswers = {
-        ...answers,
-        recovery_sleep: { ...data, recovery_score: recoveryScore, readiness_level: readiness.label },
-      };
-      setAnswers(updatedAnswers);
+  try {
+    const updatedAnswers = {
+      ...answers,
+      recovery_sleep: {
+        ...data,
+        recovery_score: recoveryScore,
+        readiness_level: readiness.label,
+      },
+    };
 
-      await saveOnboarding(userId, 8, updatedAnswers);
+    setAnswers(updatedAnswers);
 
-      navigate('/onboarding/injuries', { replace: true });
-    } finally {
-      setSaving(false);
-    }
-  };
+    // Save progress ONLY
+    await saveOnboarding(userId, 8, updatedAnswers);
+
+    // 🚫 DO NOT navigate here
+    // OnboardingGate will handle moving to "injuries"
+  } finally {
+    setSaving(false);
+  }
+};
 
   const prev = () => navigate('/onboarding/training-schedule', { replace: true });
 
