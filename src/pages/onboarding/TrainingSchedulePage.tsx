@@ -33,23 +33,33 @@ export default function TrainingSchedulePage() {
     );
   };
 
-  const saveAndNext = async () => {
-    if (!userId) return;
+const saveAndNext = async () => {
+  if (!userId) return;
 
-    await supabase.from('profiles').update({
-      onboarding_step: 8,
-      onboarding_data: {
-        training_schedule: {
-          daysPerWeek,
-          duration,
-          preferredDays,
-          timeOfDay,
-        },
+  // 1️⃣ Load existing onboarding data
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('onboarding_data')
+    .eq('id', userId)
+    .single();
+
+  // 2️⃣ Merge + advance step
+  await supabase.from('profiles').update({
+    onboarding_step: 9, // NEXT step (Recovery & Sleep)
+    onboarding_data: {
+      ...profile?.onboarding_data,
+      training_schedule: {
+        daysPerWeek,
+        duration,
+        preferredDays,
+        timeOfDay,
       },
-    }).eq('id', userId);
+    },
+  }).eq('id', userId);
 
-    window.location.href = '/onboarding/recovery-sleep';
-  };
+  window.location.href = '/onboarding/recovery-sleep';
+};
+
 
   return (
     <Box minHeight="100vh" bgcolor="#0F172A" p={3} color="#E5E7EB">

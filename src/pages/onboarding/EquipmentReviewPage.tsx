@@ -54,7 +54,7 @@ export default function EquipmentReviewPage() {
   const saveAndNext = async () => {
     if (!userId) return;
 
-    await saveOnboarding(userId, 7, {
+    await saveOnboarding(userId, 8, {
       selected_equipment: selected,
     });
 

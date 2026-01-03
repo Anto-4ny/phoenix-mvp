@@ -32,21 +32,22 @@ export default function MobilityPage() {
     flexibilityGoals: [] as string[],
   });
 
-  useEffect(() => {
-    supabase.auth.getUser().then(async ({ data: auth }) => {
-      if (!auth.user) return;
-      setUserId(auth.user.id);
+useEffect(() => {
+  supabase.auth.getUser().then(async ({ data: auth }) => {
+    if (!auth.user) return;
+    setUserId(auth.user.id);
 
-      // Load saved mobility if exists
-      const { data: saved } = await supabase
-        .from('profiles')
-        .select('mobility')
-        .eq('user_id', auth.user.id)
-        .single();
+    const { data: saved } = await supabase
+      .from('profiles')
+      .select('onboarding_data')
+      .eq('id', auth.user.id)
+      .single();
 
-      if (saved?.mobility) setData(saved.mobility);
-    });
-  }, []);
+    if (saved?.onboarding_data?.mobility) {
+      setData(saved.onboarding_data.mobility);
+    }
+  });
+}, []);
 
   const toggleGoal = (goal: string) => {
     setData((prev) => {
@@ -60,11 +61,15 @@ export default function MobilityPage() {
     });
   };
 
-  const next = async () => {
-    if (!userId) return;
-    await saveOnboarding(userId, 10, data); // stepIndex 10
-    window.location.href = '/onboarding/review'; // next step
-  };
+const next = async () => {
+  if (!userId) return;
+
+  await saveOnboarding(userId, 12, {
+    mobility: data,
+  });
+
+  window.location.href = '/onboarding/review';
+};
 
   const prev = () => {
     window.location.href = '/onboarding/injuries';

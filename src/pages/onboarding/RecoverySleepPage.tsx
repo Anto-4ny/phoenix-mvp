@@ -67,22 +67,22 @@ export default function RecoverySleepPage() {
     improve_sleep: 'Yes',
   });
 
-  useEffect(() => {
-    supabase.auth.getUser().then(async ({ data: auth }) => {
-      if (!auth.user) return;
-      setUserId(auth.user.id);
+useEffect(() => {
+  supabase.auth.getUser().then(async ({ data: auth }) => {
+    if (!auth.user) return;
+    setUserId(auth.user.id);
 
-      const { data: saved } = await supabase
-        .from('profiles')
-        .select('recovery_sleep')
-        .eq('user_id', auth.user.id)
-        .single();
+    const { data: saved } = await supabase
+      .from('profiles')
+      .select('onboarding_data')
+      .eq('id', auth.user.id)
+      .single();
 
-      if (saved?.recovery_sleep) {
-        setData(saved.recovery_sleep);
-      }
-    });
-  }, []);
+    if (saved?.onboarding_data?.recovery_sleep) {
+      setData(saved.onboarding_data.recovery_sleep);
+    }
+  });
+}, []);
 
   const update = (key: string, value: any) => {
     setData((prev) => ({ ...prev, [key]: value }));
@@ -96,19 +96,19 @@ export default function RecoverySleepPage() {
 
   const readiness = getReadiness(recoveryScore);
 
-  const next = async () => {
-    if (!userId) return;
+const next = async () => {
+  if (!userId) return;
 
-    await saveOnboarding(userId, 8, {
-      recovery_sleep: {
-        ...data,
-        recovery_score: recoveryScore,
-        readiness_level: readiness.label,
-      },
-    });
+  await saveOnboarding(userId, 10, {
+    recovery_sleep: {
+      ...data,
+      recovery_score: recoveryScore,
+      readiness_level: readiness.label,
+    },
+  });
 
-    window.location.href = '/onboarding/injuries';
-  };
+  window.location.href = '/onboarding/injuries';
+};
 
   const prev = () => {
     window.location.href = '/onboarding/training-schedule';

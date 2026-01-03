@@ -31,20 +31,22 @@ export default function InjuriesPage() {
     limitations: '' as string,
   });
 
-  useEffect(() => {
-    supabase.auth.getUser().then(async ({ data: auth }) => {
-      if (!auth.user) return;
-      setUserId(auth.user.id);
+useEffect(() => {
+  supabase.auth.getUser().then(async ({ data: auth }) => {
+    if (!auth.user) return;
+    setUserId(auth.user.id);
 
-      const { data: saved } = await supabase
-        .from('profiles')
-        .select('injuries')
-        .eq('user_id', auth.user.id)
-        .single();
+    const { data: saved } = await supabase
+      .from('profiles')
+      .select('onboarding_data')
+      .eq('id', auth.user.id)
+      .single();
 
-      if (saved?.injuries) setData(saved.injuries);
-    });
-  }, []);
+    if (saved?.onboarding_data?.injuries) {
+      setData(saved.onboarding_data.injuries);
+    }
+  });
+}, []);
 
   const toggleInjury = (injury: string) => {
     setData((prev) => {
@@ -58,11 +60,15 @@ export default function InjuriesPage() {
     });
   };
 
-  const next = async () => {
-    if (!userId) return;
-    await saveOnboarding(userId, 9, { injuries: data });
-    window.location.href = '/onboarding/mobility'; // next step
-  };
+const next = async () => {
+  if (!userId) return;
+
+  await saveOnboarding(userId, 11, {
+    injuries: data,
+  });
+
+  window.location.href = '/onboarding/mobility';
+};
 
   const prev = () => {
     window.location.href = '/onboarding/recovery-sleep';
