@@ -109,7 +109,7 @@ const next = async () => {
       sx={{ color: '#38BDF8' }}
       onClick={() => {
         // Skip current onboarding and go to equipment review page
-        window.location.href = '/onboarding/equipment-review';
+        navigate('/onboarding/equipment-review', { replace: true });
       }}
     >
       Skip

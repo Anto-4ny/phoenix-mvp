@@ -36,24 +36,28 @@ const OnboardingGate: React.FC<Props> = ({ children }) => {
       const stepIndex = progress.onboarding_step;
       const targetRoute = ONBOARDING_ROUTES[stepIndex];
 
-      // Safety fallback
       if (!targetRoute) {
         setChecking(false);
         return;
       }
 
-      // 🚨 CRITICAL: don't redirect if already on correct step
-      if (location.pathname !== targetRoute) {
-        navigate(targetRoute, { replace: true });
+      const isOnboardingRoute = location.pathname.startsWith('/onboarding');
+
+      // ✅ Allow editing & review
+      if (isOnboardingRoute) {
+        setChecking(false);
+        return;
       }
 
+      // ✅ Resume only if user is outside onboarding
+      navigate(targetRoute, { replace: true });
       setChecking(false);
     };
 
     runCheck();
   }, [navigate, location.pathname]);
 
-  if (checking) return null; // loader / splash
+  if (checking) return null;
 
   return <>{children}</>;
 };
